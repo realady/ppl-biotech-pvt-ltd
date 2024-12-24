@@ -1,7 +1,23 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MousePointer } from 'lucide-react';
 
 const Hero = () => {
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const section = document.getElementById('home');
+      if (section) {
+        const rect = section.getBoundingClientRect();
+        setIsVisible(rect.bottom > 0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Image Background */}
@@ -50,6 +66,30 @@ const Hero = () => {
           Providing affordable and quality healthcare solutions through innovative Allopathic and Ayurvedic medicines
         </motion.p>
       </motion.div>
+
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div 
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="text-white/70"
+              >
+                <MousePointer size={24} />
+              </motion.div>
+              <span className="text-sm text-white/50">Scroll to explore</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
     </section>
   );
 };
